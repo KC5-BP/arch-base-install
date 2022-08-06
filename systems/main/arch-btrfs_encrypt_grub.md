@@ -6,9 +6,7 @@
 
 # Installation Process
 
-Steps written following the archwiki pages instructions :
-
-At https://wiki.archlinux.org/title/Installation_guide
+Steps written following the [archwiki pages instructions](https://wiki.archlinux.org/title/Installation_guide) and following most of [EF - Made Simple](https://www.youtube.com/c/EFLinuxMadeSimple):
 
 ## 1 Pre-Install
 
@@ -34,8 +32,15 @@ Prepare wished partitions from Windows, additionally increasing the EFI partitio
 
 ### 1.5 Set the console keyboard layout
 
-localectl list-keymaps # You can combine this with grep 
+~~~shell
+localectl list-keymaps # You can combine this with grep and a keyword you're looking for.
+~~~
+
+~~~shell
+# In my case
 loadkeys fr_CH-latin1
+~~~
+
 ## 1.6 Verify the boot mode
 ls /sys/firmware/efi/efivars	# If the path can be shown without error, then the system is in UEFI mode. 
 					# Otherwise, you might have booted in MBR/BIOS mode and might look at your motherboard's manual

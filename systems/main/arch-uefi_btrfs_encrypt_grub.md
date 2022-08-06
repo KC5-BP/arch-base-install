@@ -1,5 +1,6 @@
 # Quick review
 - Distro: Arch
+- Motherboard's mode: UEFI
 - File system: btrfs
 - Bootloader: Grub
 - Encryption: luks
@@ -69,28 +70,48 @@ hwclk --systohc # Might prompt that hwclk is not a known cmd, just ignore it.
 ~~~
 
 ### 1.9 Partitioning
-lsblk # Check actual status
-gdisk /dev/<DISK_TO_PORTION> # sda, sdb, nvme0n1, ..
+
+~~~shell
+lsblk # Check disk blocks throughout the installation.
+# Clean old partition (in case of a re-installation) / disk
+# /!\ CLEAN ONLY WHAT'S NEEDED /!\
+wipefs -af /dev/<PARTITION_TO_CLEAN>
+wipefs -af /dev/<DISK_TO_CLEAN>
+
+parted # Just used to make label on the disk
+        sel /dev/<DISK_TO_MAKE_TABLE>
+        mklabel gpt
+# I personally prefer gdisk than parted to portion the disk
+gdisk /dev/<DISK_TO_MAKE_INSTALL> # sda, sdb, nvme0n1, ..
 # Typical partition to define : efi, boot (Optional), root, home (root + home useless with btrfs though)
 	n (New)
-	First sector (usually leave it by default)
-	Last sector  (simpler ex.: +300M)
-	HEX Code     ef00 (EFI), 8300 (default Linux filesystem)
+	First sector: (usually leave it by default)
+	Last sector:  (simpler ex.: +300M)
+	HEX Code:     ef00 (EFI), 8300 (default Linux filesystem)
 	w (Write)
 	Y
 lsblk # Check new status
-## 1.10 Format the partition
-mkfs.ext4 /dev/<BOOT_PARTITION> # (Optional)
-# Might be useless if dual booting and prepared from Windows, but
+~~~
+
+### 1.10 Format the partition
+
+~~~shell
+mkfs.ext4 /dev/<BOOT_PARTITION> # (Optional if not doing a boot partition)
+
+# Might be useless if dual booting and prepared from Windows
 mkfs.fat -FAT32 /dev/<EFI_PARTITION>
-## 1.10b Personal comment : Using encryption there's plenty of solution, this is one example:
-cryptsetup --cipher aes-xts-plain64 --hash sha512 --use-random --verify-passphrase luksFormat /dev/<PARTITION_TO_ENCRYPT> # Typically root,home partition
-	YES
-	Entering  passphrase
-	Verifying passphrase
+~~~
+
+### 1.10.bis-me Using encryption there's plenty of solutions out there, this is one example:
+
+~~~shell
+cryptsetup --cipher aes-xts-plain64 --hash sha512 --use-random --verify-passphrase luksFormat /dev/<PARTITION_TO_ENCRYPT> # Typically root OR/AND home partition
+        YES
+        Entering  passphrase
+        Verifying passphrase
 # Opening encrypted partition
-cryptsetup luksOpen /dev/<PARTITION_ENCRYPTED> <PARTITION_ALIAS> ## root/rootsys for ex. 
-	Verifying passphrase
+cryptsetup luksOpen /dev/<PARTITION_ENCRYPTED> <PARTITION_ALIAS>
+        Verifying passphrase
 
 # Remarks for the following cmd, add mapper only if encrypted
 # With encryption

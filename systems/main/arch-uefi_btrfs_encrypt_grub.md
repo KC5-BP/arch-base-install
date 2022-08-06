@@ -46,7 +46,8 @@ loadkeys fr_CH-latin1
 
 ~~~shell
 ls /sys/firmware/efi/efivars # If the path can be shown without error, then the system is in UEFI mode.
-                             # Otherwise, you might have booted in MBR/BIOS mode and might look at your motherboard's manual.
+                             # Otherwise, you might have booted in MBR/BIOS \
+                               mode and might look at your motherboard's manual.
 ~~~
 
 ### 1.7 Connect to the internet
@@ -106,7 +107,8 @@ mkfs.fat -FAT32 /dev/<EFI_PARTITION>
 ### 1.10.bis-me Using encryption there's plenty of solutions out there, this is one example:
 
 ~~~shell
-cryptsetup --cipher aes-xts-plain64 --hash sha512 --use-random --verify-passphrase luksFormat /dev/<PARTITION_TO_ENCRYPT> # Typically root OR/AND home partition (like before, useless with btrfs)
+cryptsetup --cipher aes-xts-plain64 --hash sha512 --use-random \
+--verify-passphrase luksFormat /dev/<PARTITION_TO_ENCRYPT> # Typically root OR/AND home partition (like before, useless with btrfs)
         YES
         Entering  passphrase
         Verifying passphrase
@@ -138,8 +140,10 @@ cd
 umount /mnt
 #######################################
 # Mounting subvolumes
-mount -o noatime,space_cache=v2,compress=zstd,ssd,discard=async,subvol=@ /dev/mapper/<PARTITION_ALIAS> /mnt
-mount --mkdir -o noatime,space_cache=v2,compress=zstd,ssd,discard=async,subvol=@home /dev/mapper/<PARTITION_ALIAS> /mnt/home
+mount -o noatime,space_cache=v2,compress=zstd,ssd,discard=async,subvol=@ \
+/dev/mapper/<PARTITION_ALIAS> /mnt
+mount --mkdir -o noatime,space_cache=v2,compress=zstd,ssd,discard=async,subvol=@home \
+/dev/mapper/<PARTITION_ALIAS> /mnt/home
 mount --mkdir /dev/<BOOT_PARTITION> /mnt/boot # (Optional)
 #mount --mkdir /dev/<EFI_PARTITION> /mnt/boot
 mount --mkdir /dev/<EFI_PARTITION> /mnt/boot/efi  # If passing through (Optional)
@@ -165,18 +169,18 @@ pacman -Syyy
 ### 2.2 Install essential packages
 
 ~~~shell
-# Intel processor
-pacstrap /mnt base base-devel linux linux-lts linux-headers linux-lts-headers linux-firmware nano vim git btrfs-progs reflector \
-intel-ucode # Last one might cause error because already installed.
-# AMD processor
-amd-ucode   # Last one might cause error because already installed.
+pacstrap /mnt base base-devel linux linux-lts linux-headers linux-lts-headers \
+linux-firmware nano vim git btrfs-progs reflector \ 
+intel-ucode # Intel processor
+#amd-ucode  # AMD processor
+# Last one might cause error because already installed.
 
-# If getting marginal trust issue with libcap ##
+# If getting marginal trust issue ##
 rm -rf /etc/pacman.d/gnupg
 umount /etc/pacman.d/gnupg
 rm -rf /etc/pacman.d/gnupg
 pacman-key --init && pacman-key --populate && pacman-key -r 139B09DA5BF0D338 && pacman-key --lsign-key 139B09DA5BF0D338 # Might need to update the <GPG_KEY>
-################################################
+####################################
 # Redoing pacstrap ..
 ~~~
 
@@ -189,35 +193,67 @@ genfstab -U /mnt >> /mnt/etc/fstab
 ~~~
 
 ### 3.2 chroot
-arch-chroot /mnt
-## 3.2b Personal comment : Specific to btrfs and encryption ###
-vim /etc/mkinitcpio.conf
-	MODULES=(btrfs)
-	# IF Encrypted
-	HOOKS=(base udev blablabla .. encrypt filesystems keyboard fsck) # MUST BE BEFORE "filesystems"
-# Try settings keyboard before encrypt just to see if I can enter my password with fr_CH-latin1 layout
-## 3.6 -> 3.2c : Personal note : Some cmd can be done in any order
-mkinitcpio -p linux
-## ############################################################
 
-## Base config. and packages (this can be shell scripted and executed from /)
-## 3.3 Time zone
+~~~shell
+arch-chroot /mnt
+~~~
+
+### 3.2.bis-me Modify /etc/mkinitcpio.cong for btrfs and encryption ####
+
+~~~shell
+vim /etc/mkinitcpio.conf
+        MODULES=(btrfs)
+        # IF Encrypted
+        HOOKS=(base udev "other_default_gibberish" .. encrypt filesystems \
+keyboard fsck) # "encrypt" MUST BE BEFORE "filesystems"
+~~~
+
+### 3.6 (Normally, but has no other influence on the following steps)
+
+~~~shell
+mkinitcpio -p linux
+~~~
+
+### Base config. and packages
+
+Will provide a script for that ...
+
+#### 3.3 Time zone
+
+~~~shell
 ln -sf /usr/share/zoneinfo/Europe/Zurich /etc/localtime
-hwclk --systohc
-## 3.4 Localization
-# Delete the first character on line X (in this case, it uncomments the line 178)
-sed -i '177s/.//' /etc/locale.gen # Uncomment en_US.UTF-8
-sed -i '246s/.//' /etc/locale.gen # Uncomment fr_CH.UTF-8
+hwclk --systohc # Might prompt that hwclk is not a known cmd, just ignore it.
+~~~
+
+#### 3.4 Localization
+
+~~~shell
+sed -i '177s/.//' /etc/locale.gen # Uncomment line 177, being en_US.UTF-8
+sed -i '246s/.//' /etc/locale.gen # Same for fr_CH.UTF-8
 locale-gen
 echo "LANG=en_US.UTF-8" >> /etc/locale.conf
 echo "KEYMAP=fr_CH-latin1" >> /etc/vconsole.conf
-## 3.5 Network configuration
+~~~
+
+#### 3.5 Network configuration
+
+~~~shell
 echo "theShipwreck" >> /etc/hostname
 echo "127.0.0.1       localhost" >> /etc/hosts
 echo "::1             localhost" >> /etc/hosts
-echo "127.0.1.1       theShipwreck.localdomain        theShipwreck" >> /etc/hosts
-## 3.7 Root administrator
-echo root:password | chpasswd # root being the user to change password from and obviously password, the attributed one
+echo "127.0.1.1       theShipwreck.localdomain        theShipwreck" >> \
+/etc/hosts
+~~~
+
+#### 3.6 Test it out ... 
+
+Redoing a mkinitcpio -p linux # Will it allow the passphrase's encrypted disk to be entered with the set KEYMAP and not the default one ??
+
+#### 3.7 Root administrator
+
+~~~shell
+echo root:password | chpasswd # format user:userpassword injected to chpasswd
+~~~
 
 ## 3.8 Base pkg
 # Personal: Uncomment multilib in /etc/pacman.conf

@@ -342,60 +342,59 @@ mount --mkdir /dev/<BOOT_PARTITION> /mnt/boot # (Optional)
 mount --mkdir /dev/<EFI_PARTITION> /mnt/boot(/efi)  # If passing through (Optional)
 ~~~
 
-# 4 Post-installation
+# 4 Post-installation (config. add-on only)
+
 After (re-)booting, need passphrase to access encrypted partition
+
 Then login (user + password)
-# If delogged from network
+
+## First steps
+
+### Reconnecting to wifi (if wireless)
+
+~~~shell
 nmtui
-	Activate a connection
-		Check network connectivity
-		BACK
-	QUIT
+        Activate a connection
+                Check network connectivity
+                BACK
+        QUIT
 ip a
+~~~
 
-# Enable multilib by uncommenting it in /etc/pacman.conf
-sudo pacman -Syyu
-# Get fastest mirrors
+### Enabling multilib & reload fastest mirrors
+
+~~~shell
+# Uncomment it in
+vim /etc/pacman.conf
 sudo reflector -c Switzerland -a 12 --sort rate --save /etc/pacman.d/mirrorlist
+sudo pacman -Syyu
+~~~
 
+### Get an AUR helper (or not, I recommend it after you understand what's happening in the background)
+
+~~~shell
 git clone https://aur.archlinux.org/paru-bin
 cd paru-bin
 makepkg -si
+~~~
 
-paru -S snapper
+### Using btrfs, get a snapshot mngr (& while at it, our swapfile mngr instead of making it "à la mano'")
 
-# Manually manage snapshot
-Remark(s):
-Config of subvolumes are under /etc/snapper/configs/<CONFIG_NAME>
-Snapshots of subvolumes are under the subvolumes directory 
-For instance: Snapshots of / are under /.snapshots
-		  Those of /home are under /home/.snapshots
-# Create a config. for a subvolume
-snapper -c <CONFIG_NAME> create-config /PATH/TO/SUBVOL # Leave only / for root
-# Create a snapshot
-snapper -c <CONFIG_NAME> create -d "DESCRIPTION"
-# List config's snapshots
-snapper -c <CONFIG_NAME> list
-# Compare snapshots
-snapper -c <CONFIG_NAME> diff n1..n2
-# Undo changes between snapshots
-snapper -c <CONFIG_NAME> undochange n1..n2 # /!\ Order between nx is important
-							 # If 1..2 Create files
-							 # Then 2..1 Delete them!
-							 # Can be seen as pseudo-rollback
-							 # Check what I made and the consequences ...
-# Delete snapshot "n"
-snapper -c <CONFIG_NAME> delete n
-# Delete config
-snapper -c <CONFIG_NAME> delete-config
+~~~shell
+paru -S snapper zramd
+# OR
+paru -S timeshift-bin timeshift-autosnap zramd
 
+systemctl enable --now zramd.service
+lsblk # Should see the swap virtual disk
+~~~
 
-# Timeshift & zram (alternativ to manually "makeswap")
-paru -S timeshift-bin timeshift-autosnap zramd #brave-bin # Don't use timeshift if using snapper to avoid having 2 snapshotters
-sudo systemctl enable --now zram.service
-lsblk # Should shown the swap partition
+## An environment (DE or WM)
 
-
+For that check some of the script put at disposal:
+- d
+- d
+- d
 
 # Display manager, wm & browser
 sudo pacman -S xorg lightdm lightdm-gtk-greeter lightdm-gtk-greeter-settings qutebrowser

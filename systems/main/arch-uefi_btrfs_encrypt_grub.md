@@ -34,7 +34,7 @@ Prepare wished partitions from Windows, additionally increasing the EFI partitio
 ### 1.5 Set the console keyboard layout
 
 ~~~shell
-localectl list-keymaps # You can combine this with grep and a keyword you're looking for.
+localectl list-keymaps # You can combine this with grep and a keyword you're looking for
 ~~~
 
 ~~~shell
@@ -45,16 +45,16 @@ loadkeys fr_CH-latin1
 ### 1.6 Verify the boot mode
 
 ~~~shell
-ls /sys/firmware/efi/efivars # If the path can be shown without error, then the system is in UEFI mode.
+ls /sys/firmware/efi/efivars # If the path can be shown without error, then the system is in UEFI mode
                              # Otherwise, you might have booted in MBR/BIOS \
-                               mode and might look at your motherboard's manual.
+                             # mode and might look at your motherboard's manual
 ~~~
 
 ### 1.7 Connect to the internet
 
 ~~~shell
 iwctl # Maybe useless if wired.
-        device list # Usually wlan0.
+        device list # Usually wlan0
 	station <DEVICE> connect <WIRELESS_NETWORK_ID> 
       # Prompt password to enter, so enter it ..
 	exit
@@ -67,13 +67,13 @@ ip a
 
 ~~~shell
 timedatectl set-ntp true
-hwclk --systohc # Might prompt that hwclk is not a known cmd, just ignore it.
+hwclk --systohc # Might prompt that hwclk is not a known cmd, just ignore it
 ~~~
 
 ### 1.9 Partitioning
 
 ~~~shell
-lsblk # Check disk blocks throughout the installation.
+lsblk # Check disk blocks throughout the installation
 
 # Clean old partition (in case of a re-installation) / disk
 # /!\ CLEAN ONLY WHAT'S NEEDED /!\
@@ -179,7 +179,9 @@ intel-ucode # Intel processor
 rm -rf /etc/pacman.d/gnupg
 umount /etc/pacman.d/gnupg
 rm -rf /etc/pacman.d/gnupg
-pacman-key --init && pacman-key --populate && pacman-key -r 139B09DA5BF0D338 && pacman-key --lsign-key 139B09DA5BF0D338 # Might need to update the <GPG_KEY>
+pacman-key --init && pacman-key --populate && \
+pacman-key -r 139B09DA5BF0D338 && pacman-key --lsign-key 139B09DA5BF0D338 
+# Might (or not) need to update the <GPG_KEY> in the future
 ####################################
 # Redoing pacstrap ..
 ~~~
@@ -208,24 +210,24 @@ vim /etc/mkinitcpio.conf
 keyboard fsck) # "encrypt" MUST BE BEFORE "filesystems"
 ~~~
 
-### 3.6 (Normally, but has no other influence on the following steps)
+### 3.6 Initramfs (Normally, but has no other influence on the following steps)
 
 ~~~shell
 mkinitcpio -p linux
 ~~~
 
-### Base config. and packages
+## 3.follow-up Base config. and packages
 
 Will provide a script for that ...
 
-#### 3.3 Time zone
+### 3.3 Time zone
 
 ~~~shell
 ln -sf /usr/share/zoneinfo/Europe/Zurich /etc/localtime
-hwclk --systohc # Might prompt that hwclk is not a known cmd, just ignore it.
+hwclk --systohc # Might prompt that hwclk is not a known cmd, just ignore it
 ~~~
 
-#### 3.4 Localization
+### 3.4 Localization
 
 ~~~shell
 sed -i '177s/.//' /etc/locale.gen # Uncomment line 177, being en_US.UTF-8
@@ -235,7 +237,7 @@ echo "LANG=en_US.UTF-8" >> /etc/locale.conf
 echo "KEYMAP=fr_CH-latin1" >> /etc/vconsole.conf
 ~~~
 
-#### 3.5 Network configuration
+### 3.5 Network configuration
 
 ~~~shell
 echo "theShipwreck" >> /etc/hostname
@@ -245,64 +247,100 @@ echo "127.0.1.1       theShipwreck.localdomain        theShipwreck" >> \
 /etc/hosts
 ~~~
 
-#### 3.6 Test it out ... 
+### 3.6 Test it out ... 
 
 Redoing a mkinitcpio -p linux # Will it allow the passphrase's encrypted disk to be entered with the set KEYMAP and not the default one ??
 
-#### 3.7 Root administrator
+### 3.7 Root administrator
 
 ~~~shell
 echo root:password | chpasswd # format user:userpassword injected to chpasswd
 ~~~
 
-## 3.8 Base pkg
-# Personal: Uncomment multilib in /etc/pacman.conf
-pacman -S grub grub-btrfs efibootmgr os-prober mtools dosfstools reflector networkmanager network-manager-applet openssh iwd parted gdisk bash-completion neofetch ntfs-3g nfs-utils wireless_tools wpa_supplicant dialog xdg-user-dirs xdg-utils bluez bluez-utils pulseaudio-bluetooth cups alsa-utils pavucontrol
-# Workaround if needed ##
+### 3.8 Base pkg
+
+~~~shell
+pacman -S grub grub-btrfs efibootmgr os-prober \
+mtools dosfstools ntfs-3g nfs-utils \
+networkmanager network-manager-applet iwd wireless_tools wpa_supplicant openssh \
+parted gdisk \
+dialog xdg-user-dirs xdg-utils cups \
+bluez bluez-utils pulseaudio-bluetooth alsa-utils pavucontrol \
+bash-completion neofetch\
+# If getting marginal trust issue ##
 rm -rf /etc/pacman.d/gnupg
 umount /etc/pacman.d/gnupg
 rm -rf /etc/pacman.d/gnupg
-pacman-key --init && pacman-key --populate && pacman-key -r 139B09DA5BF0D338 && pacman-key --lsign-key 139B09DA5BF0D338
-#########################
+pacman-key --init && pacman-key --populate && \
+pacman-key -r 139B09DA5BF0D338 && pacman-key --lsign-key 139B09DA5BF0D338 
+# Might (or not) need to update the <GPG_KEY> in the future
+# Kept part with -r & --lsign-key to avoid any errors while updating or else the pkg that needed it
+####################################
+
 # GPU pkg
 #pacman -S --no-confirm xf86-video-qxl # VirtualMachine
 #pacman -S --no-confirm xf86-video-intel mesa
 #pacman -S --no-confirm xf86-video-amdgpu
 #pacman -S --no-confirm nvidia nvidia-utils nvidia-settings
-## 3.9 Enabling services
-systemctl enable NetworkManager # OR iwd
+~~~
+
+### 3.9 Enabling services
+
+~~~shell
+systemctl enable NetworkManager
 systemctl enable bluetooth
-systemctl enable cups
 systemctl enable sshd
+systemctl enable cups
+systemctl enable iwd
 systemctl enable reflector.timer
-## 3.10 Creating a "default" user
+~~~
+
+### 3.10 Creating a "default" user
+
+~~~shell
 useradd -m user # Could add G wheel
 echo user:password | chpasswd
 echo "user ALL=(ALL) ALL" >> /etc/sudoers.d/user
-## 3.8 -> 3.11 Boot loader (managing grub config.)
-rm -rf /boot/efi/EFI/GRUB # Remove previous if needed
-grub-install --target=x86_64-efi --efi-directory=/boot(/efi) --bootloader-id=<BOOTLOADER_NAME> # That will appear on your efi partition
+~~~
+
+### 3.8 Boot loader (Normally, but 3.{8..10} prevent to be done at 1st boot from root)
+
+~~~shell
+rm -rf /boot/PATH/TO/PREVIOUS/GRUB # Remove previous if needed
+grub-install --target=x86_64-efi --efi-directory=/boot(/efi) \
+--bootloader-id=<BOOTLOADER_DIR_NAME>
 echo "GRUB_DISABLE_OS_PROBER=false" >> /etc/default/grub
-grub-mkconfig -o /boot/grub/grub.cfg # When dual booting, use this file injected with cat 
+grub-mkconfig -o /boot/grub/grub.cfg 
+# When dual booting, inject the content of it in the /etc/grub.d/40_custom from the system that manage the bootloader
+
 # IF ENCRYPTED
 # Find block id with blkid /dev/<DISK_ENCRYPTED>
 vim /etc/default/grub
-	GRUB_CMDLINE_LINUX="cryptdevice=UUID=xxxx-x-x-xx:<PARTITION_ALIAS> root=/dev/mapper/<PARTITION_ALIAS>"
+        GRUB_CMDLINE_LINUX="cryptdevice=UUID=xxxx-x-x-xx:<PARTITION_ALIAS> \
+root=/dev/mapper/<PARTITION_ALIAS>"
 grub-mkconfig -o /boot/grub/grub.cfg
 
 printf "\e[1,32mDone! Type exit -> umount -a & reboot\n\e[0m"
 
-exit
-umount -R /mnt OR umount -a
+exit # .. of arch-chroot
+umount -R /mnt
 reboot
+~~~
 
-## Personal note: to remount afterwards :
-##IF ENCRYPTED (ex. with luks encryption)
+## Personal notes: 
+
+To remount afterwards:
+
+~~~shell
+# IF ENCRYPTED (this case with luks)
 cryptsetup luksOpen /dev/<DISK_ENCRYPTED> <PARTITION_ALIAS>
-mount -o noatime,space_cache=v2,compress=zstd,ssd,discard=async,subvol=@ /dev/mapper/<PARTITION_ALIAS> /mnt
-mount -o noatime,space_cache=v2,compress=zstd,ssd,discard=async,subvol=@home /dev/mapper/<PARTITION_ALIAS> /mnt/home
+mount -o noatime,space_cache=v2,compress=zstd,ssd,discard=async,subvol=@ \
+/dev/mapper/<PARTITION_ALIAS> /mnt
+mount -o noatime,space_cache=v2,compress=zstd,ssd,discard=async,subvol=@home \
+/dev/mapper/<PARTITION_ALIAS> /mnt/home
 mount --mkdir /dev/<BOOT_PARTITION> /mnt/boot # (Optional)
 mount --mkdir /dev/<EFI_PARTITION> /mnt/boot(/efi)  # If passing through (Optional)
+~~~
 
 # 4 Post-installation
 After (re-)booting, need passphrase to access encrypted partition

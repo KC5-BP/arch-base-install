@@ -1,0 +1,34 @@
+# Manually manage snapshot with snapper and cmd-line
+
+##Remark(s):
+Config of subvolumes are under /etc/snapper/configs/<CONFIG_NAME>
+Snapshots of subvolumes are under the subvolumes directory
+For instance: Snapshots of / are under /.snapshots
+              Those of /home are under /home/.snapshots
+
+## Cmds
+### Create a config. for a subvolume
+snapper -c <CONFIG_NAME> create-config /PATH/TO/SUBVOL # Leave only / for root subvolume
+
+### Create a snapshot
+snapper -c <CONFIG_NAME> create -d "DESCRIPTION"
+
+### List config's snapshots
+snapper -c <CONFIG_NAME> list
+
+### Compare snapshots
+snapper -c <CONFIG_NAME> diff n1..n2
+
+### Undo changes between snapshots
+snapper -c <CONFIG_NAME> undochange n1..n2 # /!\ Order between nx is important
+                                                         # If 1..2 Create files
+                                                         # Then 2..1 Delete them!
+                                                         # Can be seen as pseudo-rollback
+                                                         # Check what I made and the consequences ...
+
+### Delete snapshot "n"
+snapper -c <CONFIG_NAME> delete n
+
+### Delete config
+snapper -c <CONFIG_NAME> delete-config
+

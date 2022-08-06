@@ -18,9 +18,9 @@ From https://archlinux.org/download/
 
 ### 1.2 Verify signature
 
-'''shell
+~~~shell
 gpg --keyserver-options auto-key-retrieve --verify archlinux-version-x86_64.iso.sig
-'''
+~~~
 
 ### 1.3 Prepare an installation medium (USB stick, ..)
 

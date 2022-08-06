@@ -6,7 +6,7 @@
 
 # Installation Process
 
-Steps written following the [archwiki pages instructions](https://wiki.archlinux.org/title/Installation_guide) and following most of [EF - Made Simple](https://www.youtube.com/c/EFLinuxMadeSimple):
+Steps written following the [archwiki pages instructions](https://wiki.archlinux.org/title/Installation_guide) and following most of [EF - Made Simple](https://www.youtube.com/c/EFLinuxMadeSimple).
 
 ## 1 Pre-Install
 
@@ -41,20 +41,34 @@ localectl list-keymaps # You can combine this with grep and a keyword you're loo
 loadkeys fr_CH-latin1
 ~~~
 
-## 1.6 Verify the boot mode
-ls /sys/firmware/efi/efivars	# If the path can be shown without error, then the system is in UEFI mode. 
-					# Otherwise, you might have booted in MBR/BIOS mode and might look at your motherboard's manual
-## 1.7 Connect to the internet
-iwctl 		# Maybe useless if wired.
-	device list # Usually wlan0.
-	station <DEVICE> connect <WIRELESS_NETWORK_ID> # Prompt password to enter.
+### 1.6 Verify the boot mode
+
+~~~shell
+ls /sys/firmware/efi/efivars # If the path can be shown without error, then the system is in UEFI mode.
+                             # Otherwise, you might have booted in MBR/BIOS mode and might look at your motherboard's manual.
+~~~
+
+### 1.7 Connect to the internet
+
+~~~shell
+iwctl # Maybe useless if wired.
+        device list # Usually wlan0.
+	station <DEVICE> connect <WIRELESS_NETWORK_ID> 
+      # Prompt password to enter, so enter it ..
 	exit
 # Test connection
 ping -c 5 archlinux.org
 ip a
-## 1.8 Update system clock
+~~~
+
+### 1.8 Update system clock
+
+~~~shell
 timedatectl set-ntp true
-## 1.9 Partitioning
+hwclk --systohc # Might prompt that hwclk is not a known cmd, just ignore it.
+~~~
+
+### 1.9 Partitioning
 lsblk # Check actual status
 gdisk /dev/<DISK_TO_PORTION> # sda, sdb, nvme0n1, ..
 # Typical partition to define : efi, boot (Optional), root, home (root + home useless with btrfs though)

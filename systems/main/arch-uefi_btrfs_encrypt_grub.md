@@ -7,7 +7,7 @@
 
 # Installation Process
 
-Steps written following the [archwiki pages instructions](https://wiki.archlinux.org/title/Installation_guide) and following most of [EF - Made Simple](https://www.youtube.com/c/EFLinuxMadeSimple).
+Steps written following the [archwiki pages instructions](https://wiki.archlinux.org/title/Installation_guide) and following most of [EF - Made Simple](https://www.youtube.com/c/EFLinuxMadeSimple) videos.
 
 ## 1 Pre-Install
 
@@ -73,6 +73,7 @@ hwclk --systohc # Might prompt that hwclk is not a known cmd, just ignore it.
 
 ~~~shell
 lsblk # Check disk blocks throughout the installation.
+
 # Clean old partition (in case of a re-installation) / disk
 # /!\ CLEAN ONLY WHAT'S NEEDED /!\
 wipefs -af /dev/<PARTITION_TO_CLEAN>
@@ -105,23 +106,29 @@ mkfs.fat -FAT32 /dev/<EFI_PARTITION>
 ### 1.10.bis-me Using encryption there's plenty of solutions out there, this is one example:
 
 ~~~shell
-cryptsetup --cipher aes-xts-plain64 --hash sha512 --use-random --verify-passphrase luksFormat /dev/<PARTITION_TO_ENCRYPT> # Typically root OR/AND home partition
+cryptsetup --cipher aes-xts-plain64 --hash sha512 --use-random --verify-passphrase luksFormat /dev/<PARTITION_TO_ENCRYPT> # Typically root OR/AND home partition (like before, useless with btrfs)
         YES
         Entering  passphrase
         Verifying passphrase
-# Opening encrypted partition
+# And before mounting an encrypted partition, you need to open it
 cryptsetup luksOpen /dev/<PARTITION_ENCRYPTED> <PARTITION_ALIAS>
         Verifying passphrase
+~~~
 
-# Remarks for the following cmd, add mapper only if encrypted
+~~~shell
+# Formating ..
+# Remarks: add mapper to following cmds only if encrypted
 # With encryption
 mkfs.brfs /dev/mapper/<PARTITION_ALIAS>
 # Without encryption
-mkfs.brfs /dev/<PARTITION> # Typically root
+mkfs.brfs /dev/<PARTITION> # Typically root OR/AND home
 
 lsblk # Check new status
+~~~
 
-## 1.11 Mount the file systems
+### 1.11 Mount the file systems
+
+~~~shell
 mount /dev/mapper/<PARTITION_ALIAS> /mnt
 # Creating sub-volumes for btrfs ######
 cd /mnt
@@ -129,43 +136,59 @@ btrfs subvolume create @ # Subvolume root
 btrfs subvolume create @home
 cd
 umount /mnt
+#######################################
+# Mounting subvolumes
 mount -o noatime,space_cache=v2,compress=zstd,ssd,discard=async,subvol=@ /dev/mapper/<PARTITION_ALIAS> /mnt
 mount --mkdir -o noatime,space_cache=v2,compress=zstd,ssd,discard=async,subvol=@home /dev/mapper/<PARTITION_ALIAS> /mnt/home
 mount --mkdir /dev/<BOOT_PARTITION> /mnt/boot # (Optional)
-mount --mkdir /dev/<EFI_PARTITION> /mnt/boot
+#mount --mkdir /dev/<EFI_PARTITION> /mnt/boot
 mount --mkdir /dev/<EFI_PARTITION> /mnt/boot/efi  # If passing through (Optional)
-### Personal comment : Accessing Windows files from Linux (Optionnal and from dual booting)
+~~~
+
+### 1.11.bis-me Dual boot alongside Windows -> Mounting Windows partition in the Linux system
+
+~~~shell
 # Might have multiples time this if disks portioned
 mkdir /mnt/windows10
 mount /dev/<WIN_PARTITION> /mnt/windows10
+~~~
 
-# 2 Installation
-## 2.1 Select the mirrors
+## 2 Installation
+
+### 2.1 Select the mirrors
+
+~~~shell
 reflector -c Switzerland -a 6 --sort rate --save /etc/pacman.d/mirrorlist
-# Uncomment multilib in /etc/pacman.conf
 pacman -Syyy
-## 2.2 Install essential packages
+~~~
+
+### 2.2 Install essential packages
+
+~~~shell
 # Intel processor
-pacstrap /mnt base base-devel linux linux-lts linux-headers linux-lts-headers linux-firmware nano vim git btrfs-progs reflector intel-ucode # Last one might cause error because already installed.
+pacstrap /mnt base base-devel linux linux-lts linux-headers linux-lts-headers linux-firmware nano vim git btrfs-progs reflector \
+intel-ucode # Last one might cause error because already installed.
 # AMD processor
-pacstrap /mnt base base-devel linux linux-lts linux-headers linux-lts-headers linux-firmware nano vim git btrfs-progs reflector amd-ucode # Last one might cause error because already installed.
-# Might be useless ######
+amd-ucode   # Last one might cause error because already installed.
+
+# If getting marginal trust issue with libcap ##
 rm -rf /etc/pacman.d/gnupg
 umount /etc/pacman.d/gnupg
 rm -rf /etc/pacman.d/gnupg
-pacman-key --init && pacman-key --populate && pacman-key -r 139B09DA5BF0D338 && pacman-key --lsign-key 139B09DA5BF0D338
-#########################
-pacstrap /mnt base base-devel build-essential linux linux-lts linux-headers linux-lts-headers linux-firmware nano vim git intel-ucode btrfs-progs # OR amd-ucode
-# 3 Configure the system
-## 3.1 File System TABle
+pacman-key --init && pacman-key --populate && pacman-key -r 139B09DA5BF0D338 && pacman-key --lsign-key 139B09DA5BF0D338 # Might need to update the <GPG_KEY>
+################################################
+# Redoing pacstrap ..
+~~~
+
+## 3 Configure the system
+
+### 3.1 File System TABle
+
+~~~shell
 genfstab -U /mnt >> /mnt/etc/fstab
-# Output like :
-# └─$> cat /mnt/etc/fstab
-# /dev/<MOUNTED_POINT>
-# UUID=	/			ext4		...		01
-# 		/boot			vfat		...		02
-# 		/windows10		ntfs		...		00
-## 3.2 chroot
+~~~
+
+### 3.2 chroot
 arch-chroot /mnt
 ## 3.2b Personal comment : Specific to btrfs and encryption ###
 vim /etc/mkinitcpio.conf

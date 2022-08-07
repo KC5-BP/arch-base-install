@@ -37,7 +37,7 @@ echo "Installing base pkgs"
 pacman -S grub grub-btrfs efibootmgr os-prober \
 	mtools dosfstools ntfs-3g nfs-utils \
 	networkmanager network-manager-applet iwd wireless_tools wpa_supplicant openssh \
-	parted gdisk \
+	parted gdisk tlp \
 	dialog xdg-user-dirs xdg-utils cups \
 	bluez bluez-utils pulseaudio-bluetooth alsa-utils pavucontrol \
 	bash-completion neofetch
@@ -49,14 +49,14 @@ echo "2nd try on installing  base pkgs"
 pacman -S grub grub-btrfs efibootmgr os-prober \
 	mtools dosfstools ntfs-3g nfs-utils \
 	networkmanager network-manager-applet iwd wireless_tools wpa_supplicant openssh \
-	parted gdisk \
+	parted gdisk tlp \
 	dialog xdg-user-dirs xdg-utils cups \
 	bluez bluez-utils pulseaudio-bluetooth alsa-utils pavucontrol \
 	bash-completion neofetch
 
 echo "Installing GPU drivers"
 #pacman -S xf86-video-qxl # Virtual Machine
-#pacman -S xf86-video-intel
+#pacman -S xf86-video-intel mesa
 #pacman -S xf86-video-amdgpu
 #pacman -S nvidia nvidia-utils nvidia-settings 
 
@@ -65,7 +65,8 @@ systemctl enable NetworkManager
 systemctl enable bluetooth 
 systemctl enable cups
 systemctl enable sshd 
-systemctl enable iwd
+systemctl enable iwd 
+systemctl enable tlp
 systemctl enable reflector.timer
 
 echo "Creating a basic user"
@@ -81,9 +82,9 @@ echo "GRUB_DISABLE_OS_PROBER=false" >> /etc/default/grub
 grub-mkconfig -o /boot/grub/grub.cfg
 
 if [ $ENCRYPTED == true ]; then
-	echo "Need to add to GRUB_CMDLINE_LINUX=\"cryptdevice=UUID=xxxx-xx-x-xx-x:<PARTITION_ALIAS> root=/dev/mapper/<PARTITION_ALIAS>\""
-	echo "Then redo the grub-mkconfig cmf"
+	echo "Need to add to GRUB_CMDLINE_LINUX=\"cryptdevice=UUID=<UUID_OF_ENCRYPTED_DISK>:<PARTITION_ALIAS> root=/dev/mapper/<PARTITION_ALIAS>\""
+	echo "Then redo the grub-mkconfig cmd"
 fi
 
-printf "\e[1,32mDone! Type exit -> unmount devices & reboot\n\e[0m"
+printf "\e[1;32mDone! Type exit -> unmount devices & reboot\n\e[0m"
 

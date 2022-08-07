@@ -140,9 +140,9 @@ cd
 umount /mnt
 #######################################
 # Mounting subvolumes
-mount -o noatime,space_cache=v2,compress=zstd,ssd,discard=async,subvol=@ \
+mount -o noatime,relatime,space_cache=v2,compress=zstd,ssd,discard=async,subvol=@ \
 /dev/mapper/<PARTITION_ALIAS> /mnt
-mount --mkdir -o noatime,space_cache=v2,compress=zstd,ssd,discard=async,subvol=@home \
+mount --mkdir -o noatime,relatime,space_cache=v2,compress=zstd,ssd,discard=async,subvol=@home \
 /dev/mapper/<PARTITION_ALIAS> /mnt/home
 mount --mkdir /dev/<BOOT_PARTITION> /mnt/boot # (Optional)
 #mount --mkdir /dev/<EFI_PARTITION> /mnt/boot

@@ -22,7 +22,7 @@ locale-gen
 echo "Putting language in locale.conf"
 echo "LANG=$LANGUAGE" >> /etc/locale.conf
 echo "Putting keyboard layout in vconsole.conf"
-echo "KEYMAP=$KEYBOARD_LAYOUT" >> /etc/vconsole.conf
+echo "KEYMAP=$KEYMAP_LAYOUT" >> /etc/vconsole.conf
 
 echo "Setting up HOSTNAME & NETWORK CFG"
 echo "$HOSTNAME" >> /etc/hostname

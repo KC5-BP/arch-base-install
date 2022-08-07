@@ -247,9 +247,11 @@ echo "127.0.1.1       theShipwreck.localdomain        theShipwreck" >> \
 /etc/hosts
 ~~~
 
-### 3.6 Test it out ... 
+### 3.6 Initramfs (! DON'T DO IT IF DONE PREVIOUSLY !)
 
 Redoing a mkinitcpio -p linux # Will it allow the passphrase's encrypted disk to be entered with the set KEYMAP and not the default one ??
+
+Answer : No, and it even crashes the reboot
 
 ### 3.7 Root administrator
 

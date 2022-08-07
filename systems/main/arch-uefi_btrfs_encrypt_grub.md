@@ -335,6 +335,12 @@ Then login (user + password)
 
 ## First steps
 
+### Login as basic user & change root password
+
+~~~shell
+passwd root
+~~~
+
 ### Reconnecting to wifi (if wireless)
 
 ~~~shell

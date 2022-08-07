@@ -1,0 +1,83 @@
+# Recovered from generated grub-mkconfig while booted from other distro (in my case: Arch Linux (system)) <- best technics to create a menuentry!!
+# Don't froget a little grub-mkconfig -o /boot/grub/grub.cfg each time you update entries
+
+# UUID:Boot partition for Arch Linux (system) /dev/nvme0n1p3
+#a98419fa-8968-4cd9-a2a2-d7b4727a1969
+# UUID:Root partition for Arch Linux (system) /dev/nvme0n1p4
+#4c65ad1e-e348-4df7-bbfc-efff0a9f8ab6
+# UUID:Root partition for Arch Linux (system) /dev/mapper/rootsys
+#eeaef638-0ef8-47b5-b816-91cde078930f 
+menuentry "Arch Linux (system)" --class arch --class gnu-linux --class gnu --class os $menuentry_id_option 'gnulinux-simple-eeaef638-0ef8-47b5-b816-91cde078930f' {
+	load_video
+	set gfxpayload=keep
+	insmod gzio
+	insmod part_gpt
+	insmod ext2
+#     insmod btrfs
+	search --no-floppy --fs-uuid --set=root a98419fa-8968-4cd9-a2a2-d7b4727a1969
+	echo 'Loading Linux linux-lts'
+	linux /vmlinuz-linux-lts root=UUID=eeaef638-0ef8-47b5-b816-91cde078930f rw rootflags=subvol=@ cryptdevice=UUID=4c65ad1e-e348-4df7-bbfc-efff0a9f8ab6:rootsys root=/dev/mapper/rootsys loglevel=3 quiet
+	echo 'Loading initial ramdisk'
+	initrd /intel-ucode.img /initramfs-linux-lts.img
+}
+
+submenu 'Advanced options for Arch Linux (system)' $menuentry_id_option 'gnulinux-advanced-eeaef638-0ef8-47b5-b816-91cde078930f' {
+        menuentry 'Arch Linux (system), with Linux linux-lts' --class arch --class gnu-linux --class gnu --class os $menuentry_id_option 'gnulinux-linux-lts-advanced-eeaef638-0ef8-47b5-b816-91cde078930f' {
+                load_video
+                set gfxpayload=keep
+                insmod gzio
+                insmod part_gpt
+                insmod ext2
+                search --no-floppy --fs-uuid --set=root a98419fa-8968-4cd9-a2a2-d7b4727a1969
+                echo    'Loading Linux linux-lts ...'
+                linux   /vmlinuz-linux-lts root=UUID=eeaef638-0ef8-47b5-b816-91cde078930f rw rootflags=subvol=@ cryptdevice=UUID=4c65ad1e-e348-4df7-bbfc-efff0a9f8ab6:rootsys root=/dev/mapper/rootsys loglevel=3 quiet
+                echo    'Loading initial ramdisk ...'
+                initrd  /intel-ucode.img /initramfs-linux-lts.img
+        }
+        menuentry 'Arch Linux (system), with Linux linux-lts (fallback initramfs)' --class arch --class gnu-linux --class gnu --class os $menuentry_id_option 'gnulinux-linux-lts-fallback-eeaef638-0ef8-47b5-b816-91cde078930f' {
+                load_video
+                set gfxpayload=keep
+                insmod gzio
+                insmod part_gpt
+                insmod ext2
+                search --no-floppy --fs-uuid --set=root a98419fa-8968-4cd9-a2a2-d7b4727a1969
+                echo    'Loading Linux linux-lts ...'
+                linux   /vmlinuz-linux-lts root=UUID=eeaef638-0ef8-47b5-b816-91cde078930f rw rootflags=subvol=@ cryptdevice=UUID=4c65ad1e-e348-4df7-bbfc-efff0a9f8ab6:rootsys root=/dev/mapper/rootsys loglevel=3 quiet
+                echo    'Loading initial ramdisk ...'
+                initrd  /intel-ucode.img /initramfs-linux-lts-fallback.img
+        }
+        menuentry 'Arch Linux (system), with Linux linux' --class arch --class gnu-linux --class gnu --class os $menuentry_id_option 'gnulinux-linux-advanced-eeaef638-0ef8-47b5-b816-91cde078930f' {
+                load_video
+                set gfxpayload=keep
+                insmod gzio
+                insmod part_gpt
+                insmod ext2
+                search --no-floppy --fs-uuid --set=root a98419fa-8968-4cd9-a2a2-d7b4727a1969
+                echo    'Loading Linux linux ...'
+                linux   /vmlinuz-linux root=UUID=eeaef638-0ef8-47b5-b816-91cde078930f rw rootflags=subvol=@ cryptdevice=UUID=4c65ad1e-e348-4df7-bbfc-efff0a9f8ab6:rootsys root=/dev/mapper/rootsys loglevel=3 quiet
+                echo    'Loading initial ramdisk ...'
+                initrd  /intel-ucode.img /initramfs-linux.img
+        }
+        menuentry 'Arch Linux (system), with Linux linux (fallback initramfs)' --class arch --class gnu-linux --class gnu --class os $menuentry_id_option 'gnulinux-linux-fallback-eeaef638-0ef8-47b5-b816-91cde078930f' {
+                load_video
+                set gfxpayload=keep
+                insmod gzio
+                insmod part_gpt
+                insmod ext2
+                search --no-floppy --fs-uuid --set=root a98419fa-8968-4cd9-a2a2-d7b4727a1969
+                echo    'Loading Linux linux ...'
+                linux   /vmlinuz-linux root=UUID=eeaef638-0ef8-47b5-b816-91cde078930f rw rootflags=subvol=@ cryptdevice=UUID=4c65ad1e-e348-4df7-bbfc-efff0a9f8ab6:rootsys root=/dev/mapper/rootsys loglevel=3 quiet
+                echo    'Loading initial ramdisk ...'
+                initrd  /intel-ucode.img /initramfs-linux-fallback.img
+        }
+}
+
+menuentry "System shutdown" {
+        echo "System is shutting down!"
+        halt
+}
+
+menuentry "System restart" {
+        echo "System is rebooting..."
+        reboot
+}

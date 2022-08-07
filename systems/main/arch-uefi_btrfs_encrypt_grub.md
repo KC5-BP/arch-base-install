@@ -327,21 +327,6 @@ umount -R /mnt
 reboot
 ~~~
 
-## Personal notes: 
-
-To remount afterwards:
-
-~~~shell
-# IF ENCRYPTED (this case with luks)
-cryptsetup luksOpen /dev/<DISK_ENCRYPTED> <PARTITION_ALIAS>
-mount -o noatime,space_cache=v2,compress=zstd,ssd,discard=async,subvol=@ \
-/dev/mapper/<PARTITION_ALIAS> /mnt
-mount -o noatime,space_cache=v2,compress=zstd,ssd,discard=async,subvol=@home \
-/dev/mapper/<PARTITION_ALIAS> /mnt/home
-mount --mkdir /dev/<BOOT_PARTITION> /mnt/boot # (Optional)
-mount --mkdir /dev/<EFI_PARTITION> /mnt/boot(/efi)  # If passing through (Optional)
-~~~
-
 # 4 Post-installation (config. add-on only)
 
 After (re-)booting, need passphrase to access encrypted partition

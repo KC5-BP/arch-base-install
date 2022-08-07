@@ -1,0 +1,12 @@
+# IF ENCRYPTED, open first the partition
+cryptsetup luksOpen /dev/<DISK_ENCRYPTED> <PARTITION_ALIAS>
+
+# Mounting each subvolumes
+mount -o noatime,space_cache=v2,compress=zstd,ssd,discard=async,subvol=@ \
+/dev/mapper/<PARTITION_ALIAS> /mnt
+mount -o noatime,space_cache=v2,compress=zstd,ssd,discard=async,subvol=@home \
+/dev/mapper/<PARTITION_ALIAS> /mnt/home
+
+# Mounting addiational partition
+mount --mkdir /dev/<BOOT_PARTITION> /mnt/boot 
+mount --mkdir /dev/<EFI_PARTITION> /mnt/boot/efi

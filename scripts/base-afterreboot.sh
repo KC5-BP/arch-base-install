@@ -17,8 +17,8 @@ if [ $ANSWER == y ]; then
 	sudo reflector -c $COUNTRY -a 6 --sort rate --save /etc/pacman.d/mirrorlist
 
 	if [ $MULTILIB_ENABLED == true ]; then
-		sed -i '93s/.//'
-		sed -i '94s/.//'
+		sed -i '93s/.//' /etc/pacman.conf
+		sed -i '94s/.//' /etc/pacman.conf
 	fi
 
 	sudo pacman -Syyy
@@ -37,7 +37,7 @@ if [ $ANSWER == y ]; then
 
 	if [ $SWAP_WITH_ZRAM == true ]; then
 		paru -S zramd
-		sudo systemctl enable --now zram.service
+		sudo systemctl enable --now zramd.service
 		sudo lsblk
 	fi
 elif [ $ANSWER == n ]; then

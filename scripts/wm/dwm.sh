@@ -31,7 +31,7 @@ else
 fi
 
 echo "Prepare xprofile"
-if [ XKBMAP_VARIANT_ENABLED == true ]; then
+if [ $XKBMAP_VARIANT_ENABLED == true ]; then
 	cat > ~/.xprofile << EOF
 # Place it under ~ OR TO SAY /home/user/.
 # Keyboard layout

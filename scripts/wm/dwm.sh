@@ -18,6 +18,7 @@ sudo pacman -S nitrogen picom lxappearance \
 echo "Install dwm config. repo."
 cd ~/.config
 if [ $VANILLA_DWM == false ]; then
+	sudo pacman -S alacritty ttf-font-awesome
 	git clone https://github.com/KC5-BP/.dwm.git
 	echo "/!\\ Don't forget to compile project after /!\\"
 else

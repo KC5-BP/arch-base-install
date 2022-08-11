@@ -20,15 +20,19 @@ cd ~/.config
 if [ $VANILLA_DWM == false ]; then
 	sudo pacman -S alacritty ttf-font-awesome
 	git clone https://github.com/KC5-BP/.dwm.git
-	echo "/!\\ Don't forget to compile project after /!\\"
+	cd .dwm/dwm;sudo make;sudo make clean install
+	cd ../dwmblocks;sudo make;sudo make clean install
+	cd ../dmenu;sudo make;sudo make clean install;cd ../..
 else
 	repos=( "dwm" "dmenu" "dwmstatus" "st" "slock" )
 	mkdir dwmrepos
+	cd dwmrepos
 	for repo in ${repos[@]}
 	do
 		git clone https://git.suckless.org/$repo
 		cd $repo;sudo make;sudo make clean install;cd ..
 	done
+	cd ..
 fi
 
 echo "Prepare xprofile"
@@ -77,5 +81,4 @@ Type=XSession
 EOF
 sudo mv ./dwm.desktop /usr/share/xsessions/dwm.desktop
 
-echo "/!\\ !AGAIN! Don't forget to compile ~/.config/.dwm projects before rebooting /!\\"
-
+sudo systemctl enable lightdm.service

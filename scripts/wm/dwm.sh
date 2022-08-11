@@ -63,7 +63,7 @@ fi
 
 echo "Prepare dwm.desktop"
 if [[ ! -d /usr/share/xsessions ]]; then
-	mkdir /usr/share/xsessions
+	sudo mkdir /usr/share/xsessions
 fi
 cat > ./dwm.desktop << EOF
 [Desktop Entry]

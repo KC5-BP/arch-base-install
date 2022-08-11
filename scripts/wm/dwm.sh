@@ -2,6 +2,7 @@
 
 # VARIABLES
 XKBMAP_LAYOUT=ch
+XKBMAP_VARIANT_ENABLED=true
 XKBMAP_VARIANT=fr
 OUTPUT=eDP1
 RESOLUTION=1920x1080
@@ -30,7 +31,8 @@ else
 fi
 
 echo "Prepare xprofile"
-cat > ~/.xprofile << EOF
+if [ XKBMAP_VARIANT_ENABLED == true ]; then
+	cat > ~/.xprofile << EOF
 # Place it under ~ OR TO SAY /home/user/.
 # Keyboard layout
 setxkbmap -layout $XKBMAP_LAYOUT -variant $XKBMAP_VARIANT &
@@ -43,6 +45,21 @@ xrandr --output $OUTPUT --mode $RESOLUTION
 # Add-on
 exec dwmblocks &
 EOF
+else
+	cat > ~/.xprofile << EOF
+# Place it under ~ OR TO SAY /home/user/.
+# Keyboard layout
+setxkbmap -layout $XKBMAP_LAYOUT &
+# Wallpaper
+nitrogen --restore &
+# Compositor
+picom -f &
+# Display
+xrandr --output $OUTPUT --mode $RESOLUTION
+# Add-on
+exec dwmblocks &
+EOF
+fi
 
 echo "Prepare dwm.desktop"
 if [[ ! -d /usr/share/xsessions ]]; then

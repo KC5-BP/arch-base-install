@@ -17,27 +17,27 @@ sudo pacman -S nitrogen picom lxappearance \
 
 echo "Install dwm config. repo."
 cd ~/.config
+mkdir dwm-session
+cd dwm-session
 if [ $VANILLA_DWM == false ]; then
 	sudo pacman -S alacritty ttf-font-awesome
-	OWN_REPO=dwm-session
-	git clone https://github.com/KC5-BP/$OWN_REPO.git
-	cd $OWN_REPO/
-	subdirs=( "dwm" "dmenu" "dwmblocks" )
-	for subdir in ${subdirs[@]}
+	
+	GITUSER=KC5-BP
+	repos=( "dmenu" "dwm" "dwmblocks" )
+	for repo in ${repos[@]}
 	do
-    		cd $subdir;make;sudo make clean install;cd ..
+		git clone https://github.com/$GITUSER/$repo
+		cd $repo;make;sudo make clean install;cd ..
 	done
-	cd ..
+	cd ../..
 else
 	repos=( "dwm" "dmenu" "dwmstatus" "st" "slock" )
-	mkdir dwmrepos
-	cd dwmrepos
 	for repo in ${repos[@]}
 	do
 		git clone https://git.suckless.org/$repo
 		cd $repo;sudo make;sudo make clean install;cd ..
 	done
-	cd ..
+	cd ../..
 fi
 
 echo "Prepare xprofile"

@@ -86,4 +86,9 @@ Type=XSession
 EOF
 sudo mv ./dwm.desktop /usr/share/xsessions/dwm.desktop
 
+echo "Prepare /usr/share/backgrounds folder if not existing"
+if [[ ! -d /usr/share/backgrounds ]]; then
+	sudo mkdir /usr/share/backgrounds
+fi
+
 sudo systemctl enable lightdm.service

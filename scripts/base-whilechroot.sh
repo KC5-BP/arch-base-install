@@ -36,11 +36,12 @@ echo root:password | chpasswd
 echo "Installing base pkgs"
 pacman -S grub grub-btrfs efibootmgr os-prober \
 	mtools dosfstools ntfs-3g nfs-utils \
-	networkmanager network-manager-applet iwd wireless_tools wpa_supplicant openssh \
-	parted gdisk tlp \
-	dialog xdg-user-dirs xdg-utils cups \
-	bluez bluez-utils pulseaudio-bluetooth alsa-utils pavucontrol \
-	bash-completion neofetch
+	iwd networkmanager network-manager-applet openssh wireless_tools wpa_supplicant \
+	gdisk parted tlp \
+	cups dialog xdg-user-dirs xdg-utils \
+	alsa-utils bluez bluez-utils pulseaudio-bluetooth pavucontrol \
+	bash-completion neofetch \
+	cmake gdb
 echo "Workaround if pacman failed because of marginal trust"
 rm -rf /etc/pacman.d/gnupg
 pacman-key --init && pacman-key --populate && \
@@ -48,11 +49,12 @@ pacman-key --init && pacman-key --populate && \
 echo "2nd try on installing  base pkgs"
 pacman -S grub grub-btrfs efibootmgr os-prober \
 	mtools dosfstools ntfs-3g nfs-utils \
-	networkmanager network-manager-applet iwd wireless_tools wpa_supplicant openssh \
-	parted gdisk tlp \
-	dialog xdg-user-dirs xdg-utils cups \
-	bluez bluez-utils pulseaudio-bluetooth alsa-utils pavucontrol \
-	bash-completion neofetch
+	iwd networkmanager network-manager-applet openssh wireless_tools wpa_supplicant \
+	gdisk parted tlp \
+	cups dialog xdg-user-dirs xdg-utils \
+	alsa-utils bluez bluez-utils pulseaudio-bluetooth pavucontrol \
+	bash-completion neofetch \
+	cmake gdb
 
 echo "Installing GPU drivers"
 #pacman -S xf86-video-qxl # Virtual Machine

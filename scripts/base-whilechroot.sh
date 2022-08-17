@@ -41,7 +41,7 @@ pacman -S grub grub-btrfs efibootmgr os-prober \
 	cups dialog xdg-user-dirs xdg-utils \
 	alsa-utils bluez bluez-utils pulseaudio-bluetooth pavucontrol \
 	bash-completion neofetch \
-	cmake gdb
+	cmake gdb nodejs
 echo "Workaround if pacman failed because of marginal trust"
 rm -rf /etc/pacman.d/gnupg
 pacman-key --init && pacman-key --populate && \
@@ -54,7 +54,7 @@ pacman -S grub grub-btrfs efibootmgr os-prober \
 	cups dialog xdg-user-dirs xdg-utils \
 	alsa-utils bluez bluez-utils pulseaudio-bluetooth pavucontrol \
 	bash-completion neofetch \
-	cmake gdb
+	cmake gdb nodejs
 
 echo "Installing GPU drivers"
 #pacman -S xf86-video-qxl # Virtual Machine

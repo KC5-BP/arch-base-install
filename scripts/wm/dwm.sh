@@ -29,7 +29,6 @@ if [ $VANILLA_DWM == false ]; then
 		git clone https://github.com/$GITUSER/$repo
 		cd $repo;make;sudo make clean install;cd ..
 	done
-	cd ../..
 else
 	repos=( "dwm" "dmenu" "dwmstatus" "st" "slock" )
 	for repo in ${repos[@]}
@@ -37,8 +36,8 @@ else
 		git clone https://git.suckless.org/$repo
 		cd $repo;sudo make;sudo make clean install;cd ..
 	done
-	cd ../..
 fi
+cd ../..
 
 echo "Prepare xprofile"
 if [ $XKBMAP_VARIANT_ENABLED == true ]; then

@@ -17,14 +17,14 @@ if [ $ANSWER == y ]; then
 	sudo reflector -c $COUNTRY -a 6 --sort rate --save /etc/pacman.d/mirrorlist
 
 	if [ $MULTILIB_ENABLED == true ]; then
-		sed -i '93s/.//' /etc/pacman.conf
-		sed -i '94s/.//' /etc/pacman.conf
+		sudo sed -i '93s/.//' /etc/pacman.conf
+		sudo sed -i '94s/.//' /etc/pacman.conf
 	fi
 
-	sudo pacman -Syyy
+	sudo pacman -Syyyu
 
-	if [ $AUR_HELP == true ]; then
-		mkdir $HOME/Documents/buildApps
+	if [ $AUR_HELPER == true ]; then
+		mkdir -p $HOME/Documents/buildApps
 		cd $HOME/Documents/buildApps
 		git clone https://aur.archlinux.org/paru.git
 		cd paru/;makepkg -si --noconfirm;cd

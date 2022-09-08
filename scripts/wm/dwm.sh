@@ -4,7 +4,7 @@
 XKBMAP_LAYOUT=ch
 XKBMAP_VARIANT_ENABLED=true
 XKBMAP_VARIANT=fr
-OUTPUT=eDP1
+OUTPUT_PRIMARY=eDP1
 RESOLUTION=1920x1080
 VANILLA_DWM=false
 
@@ -50,7 +50,10 @@ nitrogen --restore &
 # Compositor
 picom -f &
 # Display
-xrandr --output $OUTPUT --mode $RESOLUTION
+xrandr --output $OUTPUT_PRIMARY --primary --mode $RESOLUTION
+## To COMPLETE!
+## But for multiple monitors: xrandr -q to detect them
+## xrandr --output $OTHER_OUTPUT --right-of $OUTPUT_PRIMARY
 # Add-on
 exec dwmblocks &
 EOF
@@ -64,7 +67,10 @@ nitrogen --restore &
 # Compositor
 picom -f &
 # Display
-xrandr --output $OUTPUT --mode $RESOLUTION
+xrandr --output $OUTPUT_PRIMARY --primary --mode $RESOLUTION
+## To COMPLETE!
+## But for multiple monitors: xrandr -q to detect them
+## xrandr --output $OTHER_OUTPUT --right-of $OUTPUT_PRIMARY
 # Add-on
 exec dwmblocks &
 EOF

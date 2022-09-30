@@ -27,7 +27,7 @@ if [ $VANILLA_DWM == false ]; then
 	for repo in ${repos[@]}
 	do
 		git clone https://github.com/$GITUSER/$repo
-		cd $repo;make;sudo make clean install;cd ..
+		cd $repo;sudo make;sudo make clean install;cd ..
 	done
 else
 	repos=( "dwm" "dmenu" "dwmstatus" "st" "slock" )
@@ -80,7 +80,7 @@ echo "Prepare dwm.desktop"
 if [[ ! -d /usr/share/xsessions ]]; then
 	sudo mkdir /usr/share/xsessions
 fi
-cat > ./dwm.desktop << EOF
+cat > ~/dwm.desktop << EOF
 [Desktop Entry]
 Encoding=UTF-8
 Name=dwm
@@ -89,7 +89,7 @@ Exec=dwm
 Icon=dwm
 Type=XSession
 EOF
-sudo mv ./dwm.desktop /usr/share/xsessions/dwm.desktop
+sudo mv ~/dwm.desktop /usr/share/xsessions/dwm.desktop
 
 echo "Prepare /usr/share/backgrounds folder if not existing"
 if [[ ! -d /usr/share/backgrounds ]]; then
@@ -97,3 +97,4 @@ if [[ ! -d /usr/share/backgrounds ]]; then
 fi
 
 sudo systemctl enable lightdm.service
+

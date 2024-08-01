@@ -7,7 +7,7 @@ XKBMAP_VARIANT=fr
 OUTPUT_PRIMARY=eDP1
 RESOLUTION=1920x1080
 VANILLA_DWM=false
-INSTALL_DIR=/opt
+INSTALL_DIR=/opt/dwm_utils
 
 echo "Installing display manager"
 sudo pacman -S xorg lightdm lightdm-gtk-greeter lightdm-gtk-greeter-settings
@@ -17,7 +17,7 @@ sudo pacman -S nitrogen picom lxappearance \
 	libx11 libxft libxinerama freetype2 fontconfig
 
 echo "Install dwm config. repo."
-cd $INSTALL_DIR && mkdir dwm-session && cd dwm-session
+mkdir -p $INSTALL_DIR && cd $INSTALL_DIR
 
 if [ $VANILLA_DWM == false ]; then
 	sudo pacman -S ttf-font-awesome #alacritty

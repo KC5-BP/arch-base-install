@@ -5,6 +5,8 @@ LANGUAGE=en_US.UTF-8
 KEYMAP_LAYOUT=fr_CH-latin1
 HOSTNAME=theShipwreck
 BOOTLOADER_DIR_NAME=shipwreckGrub
+BASIC_USR=deep
+ENABLE_OS_PROBER=true
 ENCRYPTED=false
 
 echo "Setting up TIME ZONE"
@@ -32,6 +34,8 @@ echo "127.0.1.1		$HOSTNAME.localdomain	$HOSTNAME" >> /etc/hosts
 
 echo "Setting up ROOT PASSWORD"
 echo root:password | chpasswd
+
+pacman-key --init && pacman-key --populate
 
 echo "Installing base pkgs"
 pacman -S grub efibootmgr os-prober \
@@ -72,15 +76,19 @@ systemctl enable tlp
 systemctl enable reflector.timer
 
 echo "Creating a basic user"
-useradd -m deep
-echo deep:password | chpasswd
-usermod -aG wheel deep # If needed to add user to a specific group
-echo "deep ALL=(ALL) ALL" >> /etc/sudoers.d/deep
+useradd -m $BASIC_USR
+echo $BASIC_USR:password | chpasswd
+usermod -aG wheel $BASIC_USR # If needed to add user to a specific group
+echo "$BASIC_USR ALL=(ALL) ALL" >> /etc/sudoers.d/$BASIC_USR
 
 echo "Creating bootloader"
 grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=$BOOTLOADER_DIR_NAME
-echo "Enabling OS_PROBER & Creating config. file"
-echo "GRUB_DISABLE_OS_PROBER=false" >> /etc/default/grub
+if [ $ENABLE_OS_PROBER == true ]; then
+	echo "Enabling OS_PROBER & Creating config. file"
+	echo "GRUB_DISABLE_OS_PROBER=false" >> /etc/default/grub
+else
+	echo "Creating config. file"
+fi
 grub-mkconfig -o /boot/grub/grub.cfg
 
 if [ $ENCRYPTED == true ]; then
